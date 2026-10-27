@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutas Alternas Playa | Turismo Comunitario y Recreativo</title>
+    
+    <!-- 1. Cargar la hoja de estilos CSS de Leaflet.js desde CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Hoja de estilos CSS personalizada -->
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f8;
+            color: #2E4F4F; /* Deep Slate */
+        }
+
+        /* Encabezado principal (#33CCCC Caribbean Teal) */
+        header {
+            background-color: #33CCCC;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo-container img {
+            width: 55px;
+            height: auto;
+            display: block;
+        }
+
+        .logo-container h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 26px;
+        }
+
+        header p {
+            color: #ffffff;
+            margin-top: 8px;
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Panel de Filtros (#F1D78D Sun Gold) */
+        .filter-container {
+            background-color: #F1D78D;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-container label {
+            font-weight: bold;
+            color: #2E4F4F;
+        }
+
+        select, input, button {
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Botón de Acción (#FF8080 Warm Coral) */
+        .btn-search {
+            background-color: #FF8080;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-search:hover {
+            background-color: #e66b6b;
+        }
+
+        /* Áreas principales del mapa e información */
+        main {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            gap: 25px;
+        }
+
+        /* Contenedor del Mapa (Leaflet.js) */
+        #map {
+            width: 100%;
+            height: 380px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Galería de tarjetas */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #2E4F4F;
+        }
+
+        .badge {
+            background-color: #33CCCC;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .badge-recreativo {
+            background-color: #FF8080;
+        }
+
+        footer {
+            text-align: center;
+            padding: 18px;
+            background-color: #2E4F4F;
+            color: white;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado con Logo y Título -->
+    <header>
+        <div class="logo-container">
+            <img src="logo-rutas_alternas.jpeg" alt="Logo Rutas Alternas Playa">
+            <h1>Rutas Alternas Playa</h1>
+        </div>
+        <p>Directorio y Mapa Interactivo de Lugares Recreativos y Gastronomía Local</p>
+    </header>
+
+    <!-- Barra de Búsqueda y Filtros por Especialidad -->
+    <section class="filter-container">
+        <label for="categoria">Filtrar por Especialidad o Lugar:</label>
+        <select id="categoria">
+            <option value="todos">Todas las opciones</option>
+            <option value="recreativo">Espacios Recreativos y Cenotes Urbanos</option>
+            <option value="japonesa">Comida Japonesa de Colonia</option>
+            <option value="mexicana">Fondas y Gastronomía Tradicional</option>
+            <option value="artesanias">Talleres Culturales y Artesanías</option>
+        </select>
+        
+        <button class="btn-search" onclick="filtrarMapa()">Filtrar Mapa</button>
+    </section>
+
+    <!-- Contenido Principal -->
+    <main>
+        <!-- Visor Limpio para Leaflet.js -->
+        <div id="map"></div>
+
+        <h2>Lugares Recreativos y Gastronómicos Recomendados</h2>
+
+        <!-- Galería de Resultados en Tarjetas -->
+        <div class="cards-grid">
+            
+            <!-- Tarjeta 1: Lugar Recreativo -->
+            <article class="card">
+                <div>
+                    <span class="badge badge-recreativo">Ecoturismo / Recreativo</span>
+                    <h3>Cenote Comunitario Colosio</h3>
+                    <p><strong>Ubicación:</strong> Col. Luis Donaldo Colosio</p>
+                    <p>Espacio natural y recreativo protegido por la comunidad, ideal para actividades al aire libre fuera de la zona costera masiva.</p>
+                </div>
+                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6450,-87.0650', '_blank')">Cómo Llegar (Maps)</button>
+            </article>
+
+            <!-- Tarjeta 2: Gastronomía Japonesa -->
+            <article class="card">
+                <div>
+                    <span class="badge">Comida Japonesa</span>
+                    <h3>Oishii Ramen Colosio</h3>
+                    <p><strong>Ubicación:</strong> Col. Luis Donaldo Colosio</p>
+                    <p>Ramen artesanal y platillos japoneses preparados por residentes locales a precios accesibles de colonia.</p>
+                </div>
+                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6412,-87.0682', '_blank')">Cómo Llegar (Maps)</button>
+            </article>
+
+            <!-- Tarjeta 3: Lugar Recreativo / Cultural -->
+            <article class="card">
+                <div>
+                    <span class="badge badge-recreativo">Parque Cultural</span>
+                    <h3>Parque Bellavista y Taller Cultural</h3>
+                    <p><strong>Ubicación:</strong> Col. Bellavista</p>
+                    <p>Área verde recreativa con talleres de artesanías locales y eventos culturales comunitarios los fines de semana.</p>
+                </div>
+                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6280,-87.0850', '_blank')">Cómo Llegar (Maps)</button>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 Rutas Alternas Playa - Universidad Tecnológica Riviera Maya (UTRM)</p>
+    </footer>
+
+    <!-- 2. Cargar el Script ejecutable de Leaflet.js desde CDN -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 3. Script de Instanciación e Interacción del Mapa -->
+    <script>
+        // 1. Inicializar y centrar el mapa en Playa del Carmen
+        const mapa = L.map('map').setView([20.6296, -87.0739], 13);
+
+        // 2. Cargar las baldosas abiertas de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapa);
+
+        // 3. Crear ícono de marcador personalizado (Warm Coral #FF8080)
+        const iconoCoral = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // 4. Catálogo GeoJSON de lugares geolocalizados
+        const lugares = [
+            {
+                nombre: "Cenote Comunitario Colosio",
+                colonia: "Col. Luis Donaldo Colosio",
+                especialidad: "Ecoturismo / Recreativo",
+                categoria: "recreativo",
+                coordenadas: [20.6450, -87.0650],
+                mapsUrl: "https://maps.google.com/?q=20.6450,-87.0650"
+            },
+            {
+                nombre: "Oishii Ramen Colosio",
+                colonia: "Col. Luis Donaldo Colosio",
+                especialidad: "Comida Japonesa",
+                categoria: "japonesa",
+                coordenadas: [20.6412, -87.0682],
+                mapsUrl: "https://maps.google.com/?q=20.6412,-87.0682"
+            },
+            {
+                nombre: "Fonda La Vecindad",
+                colonia: "Col. Ejido",
+                especialidad: "Comida Mexicana Tradicional",
+                categoria: "mexicana",
+                coordenadas: [20.6280, -87.0850],
+                mapsUrl: "https://maps.google.com/?q=20.6280,-87.0850"
+            }
+        ];
+
+        // Guardar la lista de marcadores activos para poder filtrarlos
+        let marcadores = [];
+
+        // 5. Función para renderizar los marcadores en el mapa
+        function cargarMarcadores(lista) {
+            // Limpiar marcadores previos
+            marcadores.forEach(m => mapa.removeLayer(m));
+            marcadores = [];
+
+            lista.forEach(lugar => {
+                const marker = L.marker(lugar.coordenadas, { icon: iconoCoral })
+                    .addTo(mapa)
+                    .bindPopup(`
+                        <div style="text-align: center;">
+                            <strong style="color: #2E4F4F; font-size: 14px;">${lugar.nombre}</strong><br>
+                            <span style="font-size: 12px; color: #666;">${lugar.colonia}</span><br>
+                            <span style="font-size: 12px; font-weight: bold; color: #33CCCC;">${lugar.especialidad}</span><br>
+                            <a href="${lugar.mapsUrl}" target="_blank" style="display: inline-block; margin-top: 6px; padding: 4px 8px; background-color: #FF8080; color: #FFF; border-radius: 4px; text-decoration: none; font-size: 11px;">Cómo Llegar (Maps)</a>
+                        </div>
+                    `);
+                marcadores.push(marker);
+            });
+        }
+
+        // Cargar todos los marcadores al inicio
+        cargarMarcadores(lugares);
+
+        // 6. Función de Filtrado Dinámico en el Mapa
+        function filtrarMapa() {
+            const categoria = document.getElementById('categoria').value;
+            if (categoria === 'todos') {
+                cargarMarcadores(lugares);
+            } else {
+                const filtrados = lugares.filter(l => l.categoria === categoria);
+                cargarMarcadores(filtrados);
+            }
+        }
+    </script>
+</body>
+</html>
