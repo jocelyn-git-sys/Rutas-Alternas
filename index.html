@@ -39,6 +39,7 @@
         <div class="cards-grid" id="contenedorTarjetas"></div>
     </main>
 
+    <!-- VENTANA MODAL PARA AGREGAR LUGAR -->
     <div id="modalAgregar" class="modal">
         <div class="modal-content">
             <h3>Agregar Nuevo Lugar</h3>
@@ -74,7 +75,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        // 0. CONTROL DE SEGURIDAD (Protección de Sesión)
+        // 0. CONFIGURACIÓN DE URL DE API Y CONTROL DE SEGURIDAD
+        const API_URL = 'https://rutas-alternas-production.up.railway.app';
+
         const usuarioSesion = localStorage.getItem('usuarioActivo');
         if (!usuarioSesion) {
             alert('Acceso no autorizado. Por favor inicia sesión primero.');
@@ -105,7 +108,7 @@
         let todosLosLugares = [];
         let marcadoresActivos = [];
 
-        // 2. Renderizado Dinámico de Marcadores y Tarjetas
+        // 2. Renderizar Marcadores en el Mapa y Tarjetas en la Grilla
         function renderizarLugares(lista) {
             marcadoresActivos.forEach(m => mapa.removeLayer(m));
             marcadoresActivos = [];
@@ -154,9 +157,9 @@
             });
         }
 
-        // 3. Petición GET a MySQL en Railway
+        // 3. Consultar datos desde Railway
         function cargarDatosMySQL() {
-            fetch('http://localhost:5000/api/lugares')
+            fetch(`${API_URL}/api/lugares`)
                 .then(res => {
                     if (!res.ok) throw new Error('Error al conectar con la base de datos');
                     return res.json();
@@ -170,7 +173,7 @@
 
         window.onload = cargarDatosMySQL;
 
-        // 4. Filtrar por Especialidad
+        // 4. Filtrar Marcadores por Especialidad
         function filtrarMapa() {
             const categoria = document.getElementById('categoria').value;
             if (categoria === 'todos') {
@@ -181,7 +184,7 @@
             }
         }
 
-        // 5. Control de la Ventana Modal
+        // 5. Control del Modal
         function abrirModal() {
             document.getElementById('modalAgregar').style.display = 'flex';
         }
@@ -191,7 +194,7 @@
             document.getElementById('formAgregarLugar').reset();
         }
 
-        // 6. Guardar nuevo lugar en MySQL
+        // 6. Guardar Nuevo Lugar en Railway
         function guardarLugarBD(event) {
             event.preventDefault();
 
@@ -208,7 +211,7 @@
                 google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${latInput},${lngInput}`
             };
 
-            fetch('mysql://root:hBtXXlbCiogrvTnKDTqyAtOwIvEoHfhI@crossover.proxy.rlwy.net:33768/railway', {
+            fetch(`${API_URL}/api/lugares`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoLugar)
@@ -219,7 +222,7 @@
                 mapa.flyTo([latInput, lngInput], 15);
                 cargarDatosMySQL();
             })
-            .catch(err => console.error('Error al guardar en MySQL:', err));
+            .catch(err => console.error('Error al guardar en Railway:', err));
         }
     </script>
 </body>

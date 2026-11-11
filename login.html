@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- 2. PANTALLA DE BIENVENIDA (GET STARTED) -->
+        <!-- 2. PANTALLA DE BIENVENIDA -->
         <div id="screen-get-started" class="screen">
             <div class="get-started-content">
                 <div class="illustration-box">
@@ -143,7 +143,9 @@
     </div>
 
     <script>
-        // Transición de carga inicial en 3 segundos
+        // URL Pública del Backend en Railway
+        const API_URL = 'https://rutas-alternas-production.up.railway.app';
+
         setTimeout(() => {
             showScreen('screen-get-started');
         }, 3000);
@@ -168,7 +170,7 @@
             document.getElementById(inputId).value = '';
         }
 
-        // PETICIÓN FETCH: REGISTRO EN MYSQL (RAILWAY)
+        // REGISTRO DE USUARIO EN RAILWAY
         function ejecutarRegistro(event) {
             event.preventDefault();
             const username = document.getElementById('signup-username').value;
@@ -181,7 +183,7 @@
                 return;
             }
 
-            fetch('http://localhost:5000/api/register', {
+            fetch(`${API_URL}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
@@ -198,13 +200,13 @@
             .catch(err => alert('Ocurrió un error al conectar con el servidor.'));
         }
 
-        // PETICIÓN FETCH: LOGIN Y VALIDACIÓN CONTRA MYSQL
+        // LOGIN DE USUARIO EN RAILWAY
         function ejecutarLogin(event) {
             event.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
-            fetch('http://localhost:5000/api/login', {
+            fetch(`${API_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -212,10 +214,9 @@
             .then(res => res.json().then(data => ({ ok: res.ok, data })))
             .then(res => {
                 if (!res.ok) {
-                    alert(res.data.error);
+                    alert(res.data.error || 'Correo o contraseña incorrectos');
                     return;
                 }
-                // Almacenar token/sesión en el navegador
                 localStorage.setItem('usuarioActivo', JSON.stringify(res.data.usuario));
                 window.location.href = 'index.html';
             })

@@ -100,6 +100,7 @@
         <a href="index.html" class="link-back">← Volver a la Vista del Consumidor</a>
     </main>
 
+    <!-- VENTANA MODAL PARA REGISTRAR LUGAR -->
     <div id="modalAgregar" class="modal">
         <div class="modal-content">
             <h3>Agregar Nuevo Lugar</h3>
@@ -133,14 +134,21 @@
     </footer>
 
     <script>
+        // 1. URL Pública del Backend en Railway
+        const API_URL = 'https://rutas-alternas-production.up.railway.app';
+
+        // 2. Cargar los datos desde MySQL vía API en Railway
         function cargarTablaAdmin() {
-            fetch('http://localhost:5000/api/lugares')
-                .then(res => res.json())
+            fetch(`${API_URL}/api/lugares`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Error al consultar la base de datos');
+                    return res.json();
+                })
                 .then(data => {
                     const tbody = document.getElementById('tablaAdmin');
                     tbody.innerHTML = '';
                     
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay lugares registrados en la base de datos.</td></tr>';
                         return;
                     }
@@ -160,23 +168,29 @@
                         `;
                     });
                 })
-                .catch(err => console.error('Error al cargar la tabla:', err));
+                .catch(err => console.error('Error al cargar la tabla en admin:', err));
         }
 
+        // 3. Petición DELETE para borrar un registro por ID
         function eliminarLugar(id) {
-            if (confirm(`¿Deseas eliminar el lugar con ID ${id}?`)) {
-                fetch(`http://localhost:5000/api/lugares/${id}`, {
+            if (confirm(`¿Deseas eliminar permanentemente el lugar con ID ${id}?`)) {
+                fetch(`${API_URL}/api/lugares/${id}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' }
                 })
-                .then(res => res.json())
-                .then(respuesta => {
-                    cargarTablaAdmin();
+                .then(res => {
+                    if (!res.ok) throw new Error('Error al eliminar el registro');
+                    return res.json();
                 })
-                .catch(err => console.error('Error al eliminar:', err));
+                .then(respuesta => {
+                    alert(respuesta.message || 'Lugar eliminado correctamente');
+                    cargarTablaAdmin(); // Recarga la tabla de inmediato
+                })
+                .catch(err => alert('No se pudo eliminar el lugar seleccionado.'));
             }
         }
 
+        // 4. Funciones de la ventana Modal
         function abrirModal() {
             document.getElementById('modalAgregar').style.display = 'flex';
         }
@@ -186,30 +200,35 @@
             document.getElementById('formAgregarLugar').reset();
         }
 
+        // 5. Guardar un nuevo lugar en MySQL en Railway
         function guardarLugarBD(event) {
             event.preventDefault();
+
+            const latInput = parseFloat(document.getElementById('nuevaLatitud').value);
+            const lngInput = parseFloat(document.getElementById('nuevaLongitud').value);
 
             const nuevoLugar = {
                 nombre: document.getElementById('nuevoNombre').value,
                 categoria: document.getElementById('nuevaCategoria').value,
                 especialidad: document.getElementById('nuevaEspecialidad').value,
                 colonia: document.getElementById('nuevaColonia').value,
-                latitud: parseFloat(document.getElementById('nuevaLatitud').value),
-                longitud: parseFloat(document.getElementById('nuevaLongitud').value),
-                google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${document.getElementById('nuevaLatitud').value},${document.getElementById('nuevaLongitud').value}`
+                latitud: latInput,
+                longitud: lngInput,
+                google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${latInput},${lngInput}`
             };
 
-            fetch('http://localhost:5000/api/lugares', {
+            fetch(`${API_URL}/api/lugares`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoLugar)
             })
             .then(res => res.json())
             .then(respuesta => {
+                alert('Lugar guardado exitosamente');
                 cerrarModal();
                 cargarTablaAdmin();
             })
-            .catch(err => console.error('Error al guardar:', err));
+            .catch(err => console.error('Error al guardar en Railway:', err));
         }
 
         window.onload = cargarTablaAdmin;
