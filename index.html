@@ -208,7 +208,7 @@
                 google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${latInput},${lngInput}`
             };
 
-            fetch('http://localhost:5000/api/lugares', {
+            fetch('mysql://root:hBtXXlbCiogrvTnKDTqyAtOwIvEoHfhI@crossover.proxy.rlwy.net:33768/railway', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoLugar)
