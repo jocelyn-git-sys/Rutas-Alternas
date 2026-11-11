@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | Rutas Alternas Playa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="login-estilos.css">
+</head>
+<body>
+
+    <div class="phone-container">
+
+        <!-- 1. PANTALLA DE CARGA (LOADING) -->
+        <div id="screen-loading" class="screen active-screen">
+            <div class="loading-content">
+                <img src="logo-rutas_alternas.jpeg" alt="Logo Rutas Alternas" class="brand-logo-img">
+                <h1 class="brand-title">RUTAS ALTERNAS PLAYA</h1>
+                <p class="brand-subtitle">TURISMO COMUNITARIO Y GASTRONOMÍA</p>
+            </div>
+            <div class="loading-footer">
+                <div class="spinner"></div>
+                <span>Cargando...</span>
+            </div>
+        </div>
+
+        <!-- 2. PANTALLA DE BIENVENIDA (GET STARTED) -->
+        <div id="screen-get-started" class="screen">
+            <div class="get-started-content">
+                <div class="illustration-box">
+                    <i class="fa-solid fa-map-location-dot coffee-icon"></i>
+                </div>
+                <h2>Explora Playa del Carmen</h2>
+                <p class="description">
+                    Descubre joyas gastronómicas y rincones culturales locales fuera de la zona turística habitual.
+                </p>
+                <button class="btn-primary" onclick="showScreen('screen-login')">
+                    Comenzar <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. PANTALLA DE INICIO DE SESIÓN (LOGIN) -->
+        <div id="screen-login" class="screen">
+            <div class="auth-header">
+                <img src="logo-rutas_alternas.jpeg" alt="Logo" class="mini-logo">
+                <h2 class="auth-title">RUTAS ALTERNAS</h2>
+                <span class="auth-tag">PLAYA DEL CARMEN</span>
+            </div>
+
+            <form class="auth-form" onsubmit="ejecutarLogin(event)">
+                <div class="input-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-email" placeholder="usuario@correo.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-pass" placeholder="••••••••" required>
+                        <i class="fa-regular fa-eye-slash toggle-eye" onclick="togglePassword('login-pass', this)"></i>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox"> Recordarme
+                    </label>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-primary btn-submit">Iniciar Sesión</button>
+            </form>
+
+            <div class="social-divider">
+                <span>O ingresa con</span>
+            </div>
+
+            <div class="social-buttons">
+                <button class="social-btn"><i class="fa-brands fa-google"></i></button>
+                <button class="social-btn"><i class="fa-brands fa-apple"></i></button>
+                <button class="social-btn"><i class="fa-brands fa-facebook-f"></i></button>
+            </div>
+
+            <p class="switch-auth">
+                ¿No tienes cuenta? <a href="#" onclick="showScreen('screen-signup')">Regístrate</a>
+            </p>
+        </div>
+
+        <!-- 4. PANTALLA DE REGISTRO (SIGNUP) -->
+        <div id="screen-signup" class="screen">
+            <div class="auth-header">
+                <img src="logo-rutas_alternas.jpeg" alt="Logo" class="mini-logo">
+                <h2 class="auth-title">CREAR CUENTA</h2>
+                <span class="auth-tag">RUTAS ALTERNAS PLAYA</span>
+            </div>
+
+            <form class="auth-form" onsubmit="ejecutarRegistro(event)">
+                <div class="input-group">
+                    <label>Nombre de Usuario</label>
+                    <input type="text" id="signup-username" placeholder="Tu Nombre" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="signup-email" placeholder="usuario@correo.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signup-pass" placeholder="••••••••" required>
+                        <i class="fa-regular fa-eye-slash toggle-eye" onclick="togglePassword('signup-pass', this)"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirmar Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signup-confirm" placeholder="••••••••" required>
+                        <i class="fa-solid fa-xmark clear-icon" onclick="clearInput('signup-confirm')"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary btn-submit">Registrarse</button>
+            </form>
+
+            <div class="social-divider">
+                <span>O regístrate con</span>
+            </div>
+
+            <div class="social-buttons">
+                <button class="social-btn"><i class="fa-brands fa-google"></i></button>
+                <button class="social-btn"><i class="fa-brands fa-apple"></i></button>
+                <button class="social-btn"><i class="fa-brands fa-facebook-f"></i></button>
+            </div>
+
+            <p class="switch-auth">
+                ¿Ya tienes cuenta? <a href="#" onclick="showScreen('screen-login')">Inicia sesión</a>
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // Transición de carga inicial en 3 segundos
+        setTimeout(() => {
+            showScreen('screen-get-started');
+        }, 3000);
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+        }
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+        }
+
+        function clearInput(inputId) {
+            document.getElementById(inputId).value = '';
+        }
+
+        // PETICIÓN FETCH: REGISTRO EN MYSQL (RAILWAY)
+        function ejecutarRegistro(event) {
+            event.preventDefault();
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-pass').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            fetch('http://localhost:5000/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(res => {
+                if (!res.ok) {
+                    alert(res.data.error || 'Error al registrar el usuario');
+                    return;
+                }
+                alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                showScreen('screen-login');
+            })
+            .catch(err => alert('Ocurrió un error al conectar con el servidor.'));
+        }
+
+        // PETICIÓN FETCH: LOGIN Y VALIDACIÓN CONTRA MYSQL
+        function ejecutarLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+
+            fetch('http://localhost:5000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(res => {
+                if (!res.ok) {
+                    alert(res.data.error);
+                    return;
+                }
+                // Almacenar token/sesión en el navegador
+                localStorage.setItem('usuarioActivo', JSON.stringify(res.data.usuario));
+                window.location.href = 'index.html';
+            })
+            .catch(err => alert('Error al conectar con el servidor.'));
+        }
+    </script>
+</body>
+</html>

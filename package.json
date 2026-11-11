@@ -9,7 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
     "leaflet": "^1.9.4",
+    "mysql2": "^3.24.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1"
@@ -17,5 +20,19 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.0.0"
-  }
+  },
+  "description": "",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jocelyn-git-sys/Rutas-Alternas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jocelyn-git-sys/Rutas-Alternas/issues"
+  },
+  "homepage": "https://github.com/jocelyn-git-sys/Rutas-Alternas#readme"
 }

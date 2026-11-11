@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Rutas Alternas Playa</title>
+    
+    <link rel="stylesheet" href="estilos.css">
+    
+    <style>
+        .admin-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #2E4F4F;
+            color: #F1D78D;
+            font-family: 'Cinzel Decorative', serif;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .btn-delete {
+            background-color: #EE8683;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-delete:hover {
+            background-color: #e66b6b;
+        }
+        .link-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #67C9CC;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .link-back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="logo-rutas_alternas.jpeg" alt="Logo Rutas Alternas Playa">
+            <h1>Panel de Administración</h1>
+        </div>
+        <p>Gestión y Control de Lugares Registrados en MySQL (Railway)</p>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h2>Lugares en la Base de Datos</h2>
+            <button class="btn-add" onclick="abrirModal()">+ Registrar Nuevo Lugar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Especialidad</th>
+                    <th>Colonia</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAdmin"></tbody>
+        </table>
+        
+        <a href="index.html" class="link-back">← Volver a la Vista del Consumidor</a>
+    </main>
+
+    <div id="modalAgregar" class="modal">
+        <div class="modal-content">
+            <h3>Agregar Nuevo Lugar</h3>
+            <form id="formAgregarLugar" onsubmit="guardarLugarBD(event)">
+                <input type="text" id="nuevoNombre" placeholder="Nombre del lugar" required>
+                
+                <select id="nuevaCategoria" required>
+                    <option value="" disabled selected>Selecciona una categoría</option>
+                    <option value="recreativo">Espacio Recreativo / Cenote</option>
+                    <option value="japonesa">Comida Japonesa</option>
+                    <option value="mexicana">Fonda / Comida Mexicana</option>
+                    <option value="artesanias">Taller Cultural / Artesanías</option>
+                </select>
+
+                <input type="text" id="nuevaEspecialidad" placeholder="Especialidad (ej. Ramen, Tacos, Cenote)" required>
+                <input type="text" id="nuevaColonia" placeholder="Colonia (ej. Colosio, Ejido)" required>
+                <input type="number" step="any" id="nuevaLatitud" placeholder="Latitud GPS (ej. 20.6412)" required>
+                <input type="number" step="any" id="nuevaLongitud" placeholder="Longitud GPS (ej. -87.0682)" required>
+                <input type="url" id="nuevaMapsUrl" placeholder="Enlace de Google Maps (opcional)">
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-search">Guardar en Base de Datos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Rutas Alternas Playa - Universidad Tecnológica Riviera Maya (UTRM)</p>
+    </footer>
+
+    <script>
+        function cargarTablaAdmin() {
+            fetch('http://localhost:5000/api/lugares')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tablaAdmin');
+                    tbody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay lugares registrados en la base de datos.</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(lugar => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${lugar.id}</td>
+                                <td><strong>${lugar.nombre}</strong></td>
+                                <td>${lugar.categoria}</td>
+                                <td>${lugar.especialidad}</td>
+                                <td>${lugar.colonia}</td>
+                                <td>
+                                    <button class="btn-delete" onclick="eliminarLugar(${lugar.id})">Eliminar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error('Error al cargar la tabla:', err));
+        }
+
+        function eliminarLugar(id) {
+            if (confirm(`¿Deseas eliminar el lugar con ID ${id}?`)) {
+                fetch(`http://localhost:5000/api/lugares/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(respuesta => {
+                    cargarTablaAdmin();
+                })
+                .catch(err => console.error('Error al eliminar:', err));
+            }
+        }
+
+        function abrirModal() {
+            document.getElementById('modalAgregar').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalAgregar').style.display = 'none';
+            document.getElementById('formAgregarLugar').reset();
+        }
+
+        function guardarLugarBD(event) {
+            event.preventDefault();
+
+            const nuevoLugar = {
+                nombre: document.getElementById('nuevoNombre').value,
+                categoria: document.getElementById('nuevaCategoria').value,
+                especialidad: document.getElementById('nuevaEspecialidad').value,
+                colonia: document.getElementById('nuevaColonia').value,
+                latitud: parseFloat(document.getElementById('nuevaLatitud').value),
+                longitud: parseFloat(document.getElementById('nuevaLongitud').value),
+                google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${document.getElementById('nuevaLatitud').value},${document.getElementById('nuevaLongitud').value}`
+            };
+
+            fetch('http://localhost:5000/api/lugares', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nuevoLugar)
+            })
+            .then(res => res.json())
+            .then(respuesta => {
+                cerrarModal();
+                cargarTablaAdmin();
+            })
+            .catch(err => console.error('Error al guardar:', err));
+        }
+
+        window.onload = cargarTablaAdmin;
+    </script>
+</body>
+</html>

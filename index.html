@@ -5,159 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rutas Alternas Playa | Turismo Comunitario y Recreativo</title>
     
-    <!-- 1. Cargar la hoja de estilos CSS de Leaflet.js desde CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <!-- Hoja de estilos CSS personalizada -->
-    <style>
-        /* Estilos generales */
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f8;
-            color: #2E4F4F; /* Deep Slate */
-        }
-
-        /* Encabezado principal (#33CCCC Caribbean Teal) */
-        header {
-            background-color: #33CCCC;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .logo-container img {
-            width: 55px;
-            height: auto;
-            display: block;
-        }
-
-        .logo-container h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 26px;
-        }
-
-        header p {
-            color: #ffffff;
-            margin-top: 8px;
-            margin-bottom: 0;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* Panel de Filtros (#F1D78D Sun Gold) */
-        .filter-container {
-            background-color: #F1D78D;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .filter-container label {
-            font-weight: bold;
-            color: #2E4F4F;
-        }
-
-        select, input, button {
-            padding: 10px 14px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        /* Botón de Acción (#FF8080 Warm Coral) */
-        .btn-search {
-            background-color: #FF8080;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .btn-search:hover {
-            background-color: #e66b6b;
-        }
-
-        /* Áreas principales del mapa e información */
-        main {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-            gap: 25px;
-        }
-
-        /* Contenedor del Mapa (Leaflet.js) */
-        #map {
-            width: 100%;
-            height: 380px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Galería de tarjetas */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.06);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card h3 {
-            margin-top: 0;
-            color: #2E4F4F;
-        }
-
-        .badge {
-            background-color: #33CCCC;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .badge-recreativo {
-            background-color: #FF8080;
-        }
-
-        footer {
-            text-align: center;
-            padding: 18px;
-            background-color: #2E4F4F;
-            color: white;
-            margin-top: 30px;
-        }
-    </style>
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 
-    <!-- Encabezado con Logo y Título -->
     <header>
         <div class="logo-container">
             <img src="logo-rutas_alternas.jpeg" alt="Logo Rutas Alternas Playa">
@@ -166,9 +18,8 @@
         <p>Directorio y Mapa Interactivo de Lugares Recreativos y Gastronomía Local</p>
     </header>
 
-    <!-- Barra de Búsqueda y Filtros por Especialidad -->
     <section class="filter-container">
-        <label for="categoria">Filtrar por Especialidad o Lugar:</label>
+        <label for="categoria">Filtrar por Especialidad:</label>
         <select id="categoria">
             <option value="todos">Todas las opciones</option>
             <option value="recreativo">Espacios Recreativos y Cenotes Urbanos</option>
@@ -178,73 +29,70 @@
         </select>
         
         <button class="btn-search" onclick="filtrarMapa()">Filtrar Mapa</button>
+        <button class="btn-add" onclick="abrirModal()">+ Agregar Nuevo Lugar</button>
+        <button class="btn-cancel" onclick="cerrarSesion()" style="margin-left: 10px;">Cerrar Sesión</button>
     </section>
 
-    <!-- Contenido Principal -->
     <main>
-        <!-- Visor Limpio para Leaflet.js -->
         <div id="map"></div>
-
         <h2>Lugares Recreativos y Gastronómicos Recomendados</h2>
-
-        <!-- Galería de Resultados en Tarjetas -->
-        <div class="cards-grid">
-            
-            <!-- Tarjeta 1: Lugar Recreativo -->
-            <article class="card">
-                <div>
-                    <span class="badge badge-recreativo">Ecoturismo / Recreativo</span>
-                    <h3>Cenote Comunitario Colosio</h3>
-                    <p><strong>Ubicación:</strong> Col. Luis Donaldo Colosio</p>
-                    <p>Espacio natural y recreativo protegido por la comunidad, ideal para actividades al aire libre fuera de la zona costera masiva.</p>
-                </div>
-                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6450,-87.0650', '_blank')">Cómo Llegar (Maps)</button>
-            </article>
-
-            <!-- Tarjeta 2: Gastronomía Japonesa -->
-            <article class="card">
-                <div>
-                    <span class="badge">Comida Japonesa</span>
-                    <h3>Oishii Ramen Colosio</h3>
-                    <p><strong>Ubicación:</strong> Col. Luis Donaldo Colosio</p>
-                    <p>Ramen artesanal y platillos japoneses preparados por residentes locales a precios accesibles de colonia.</p>
-                </div>
-                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6412,-87.0682', '_blank')">Cómo Llegar (Maps)</button>
-            </article>
-
-            <!-- Tarjeta 3: Lugar Recreativo / Cultural -->
-            <article class="card">
-                <div>
-                    <span class="badge badge-recreativo">Parque Cultural</span>
-                    <h3>Parque Bellavista y Taller Cultural</h3>
-                    <p><strong>Ubicación:</strong> Col. Bellavista</p>
-                    <p>Área verde recreativa con talleres de artesanías locales y eventos culturales comunitarios los fines de semana.</p>
-                </div>
-                <button class="btn-search" onclick="window.open('https://maps.google.com/?q=20.6280,-87.0850', '_blank')">Cómo Llegar (Maps)</button>
-            </article>
-
-        </div>
+        <div class="cards-grid" id="contenedorTarjetas"></div>
     </main>
 
-    <!-- Pie de página -->
+    <div id="modalAgregar" class="modal">
+        <div class="modal-content">
+            <h3>Agregar Nuevo Lugar</h3>
+            <form id="formAgregarLugar" onsubmit="guardarLugarBD(event)">
+                <input type="text" id="nuevoNombre" placeholder="Nombre del lugar" required>
+                
+                <select id="nuevaCategoria" required>
+                    <option value="" disabled selected>Selecciona una categoría</option>
+                    <option value="recreativo">Espacio Recreativo / Cenote</option>
+                    <option value="japonesa">Comida Japonesa</option>
+                    <option value="mexicana">Fonda / Comida Mexicana</option>
+                    <option value="artesanias">Taller Cultural / Artesanías</option>
+                </select>
+
+                <input type="text" id="nuevaEspecialidad" placeholder="Especialidad (ej. Ramen, Tacos, Cenote)" required>
+                <input type="text" id="nuevaColonia" placeholder="Colonia (ej. Colosio, Ejido)" required>
+                <input type="number" step="any" id="nuevaLatitud" placeholder="Latitud GPS (ej. 20.6412)" required>
+                <input type="number" step="any" id="nuevaLongitud" placeholder="Longitud GPS (ej. -87.0682)" required>
+                <input type="url" id="nuevaMapsUrl" placeholder="Enlace de Google Maps (opcional)">
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-search">Guardar en Base de Datos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 Rutas Alternas Playa - Universidad Tecnológica Riviera Maya (UTRM)</p>
     </footer>
 
-    <!-- 2. Cargar el Script ejecutable de Leaflet.js desde CDN -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- 3. Script de Instanciación e Interacción del Mapa -->
     <script>
-        // 1. Inicializar y centrar el mapa en Playa del Carmen
+        // 0. CONTROL DE SEGURIDAD (Protección de Sesión)
+        const usuarioSesion = localStorage.getItem('usuarioActivo');
+        if (!usuarioSesion) {
+            alert('Acceso no autorizado. Por favor inicia sesión primero.');
+            window.location.href = 'login.html';
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('usuarioActivo');
+            window.location.href = 'login.html';
+        }
+
+        // 1. Inicialización del Mapa centrado en Playa del Carmen
         const mapa = L.map('map').setView([20.6296, -87.0739], 13);
 
-        // 2. Cargar las baldosas abiertas de OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: '&copy; OpenStreetMap'
         }).addTo(mapa);
 
-        // 3. Crear ícono de marcador personalizado (Warm Coral #FF8080)
         const iconoCoral = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -254,70 +102,124 @@
             shadowSize: [41, 41]
         });
 
-        // 4. Catálogo GeoJSON de lugares geolocalizados
-        const lugares = [
-            {
-                nombre: "Cenote Comunitario Colosio",
-                colonia: "Col. Luis Donaldo Colosio",
-                especialidad: "Ecoturismo / Recreativo",
-                categoria: "recreativo",
-                coordenadas: [20.6450, -87.0650],
-                mapsUrl: "https://maps.google.com/?q=20.6450,-87.0650"
-            },
-            {
-                nombre: "Oishii Ramen Colosio",
-                colonia: "Col. Luis Donaldo Colosio",
-                especialidad: "Comida Japonesa",
-                categoria: "japonesa",
-                coordenadas: [20.6412, -87.0682],
-                mapsUrl: "https://maps.google.com/?q=20.6412,-87.0682"
-            },
-            {
-                nombre: "Fonda La Vecindad",
-                colonia: "Col. Ejido",
-                especialidad: "Comida Mexicana Tradicional",
-                categoria: "mexicana",
-                coordenadas: [20.6280, -87.0850],
-                mapsUrl: "https://maps.google.com/?q=20.6280,-87.0850"
+        let todosLosLugares = [];
+        let marcadoresActivos = [];
+
+        // 2. Renderizado Dinámico de Marcadores y Tarjetas
+        function renderizarLugares(lista) {
+            marcadoresActivos.forEach(m => mapa.removeLayer(m));
+            marcadoresActivos = [];
+
+            const contenedorTarjetas = document.getElementById('contenedorTarjetas');
+            if (contenedorTarjetas) contenedorTarjetas.innerHTML = '';
+
+            if (!lista || lista.length === 0) {
+                if (contenedorTarjetas) contenedorTarjetas.innerHTML = '<p style="text-align:center; width:100%;">No hay lugares registrados para mostrar.</p>';
+                return;
             }
-        ];
-
-        // Guardar la lista de marcadores activos para poder filtrarlos
-        let marcadores = [];
-
-        // 5. Función para renderizar los marcadores en el mapa
-        function cargarMarcadores(lista) {
-            // Limpiar marcadores previos
-            marcadores.forEach(m => mapa.removeLayer(m));
-            marcadores = [];
 
             lista.forEach(lugar => {
-                const marker = L.marker(lugar.coordenadas, { icon: iconoCoral })
-                    .addTo(mapa)
-                    .bindPopup(`
-                        <div style="text-align: center;">
-                            <strong style="color: #2E4F4F; font-size: 14px;">${lugar.nombre}</strong><br>
-                            <span style="font-size: 12px; color: #666;">${lugar.colonia}</span><br>
-                            <span style="font-size: 12px; font-weight: bold; color: #33CCCC;">${lugar.especialidad}</span><br>
-                            <a href="${lugar.mapsUrl}" target="_blank" style="display: inline-block; margin-top: 6px; padding: 4px 8px; background-color: #FF8080; color: #FFF; border-radius: 4px; text-decoration: none; font-size: 11px;">Cómo Llegar (Maps)</a>
-                        </div>
-                    `);
-                marcadores.push(marker);
+                let lat = lugar.coordenadas ? parseFloat(lugar.coordenadas[0]) : parseFloat(lugar.latitud);
+                let lng = lugar.coordenadas ? parseFloat(lugar.coordenadas[1]) : parseFloat(lugar.longitud);
+
+                const urlMapas = lugar.mapsUrl || lugar.google_maps_url || `https://maps.google.com/?q=${lat},${lng}`;
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng], { icon: iconoCoral })
+                        .addTo(mapa)
+                        .bindPopup(`
+                            <div style="text-align: center;">
+                                <strong style="color: #2E4F4F; font-size: 14px;">${lugar.nombre}</strong><br>
+                                <span style="font-size: 12px; color: #666;">${lugar.colonia}</span><br>
+                                <span style="font-size: 12px; font-weight: bold; color: #33CCCC;">${lugar.especialidad}</span><br>
+                                <a href="${urlMapas}" target="_blank" style="display: inline-block; margin-top: 6px; padding: 4px 8px; background-color: #FF8080; color: #FFF; border-radius: 4px; text-decoration: none; font-size: 11px;">Cómo Llegar</a>
+                            </div>
+                        `);
+                    marcadoresActivos.push(marker);
+                }
+
+                if (contenedorTarjetas) {
+                    const tarjetaHTML = `
+                        <article class="card">
+                            <div>
+                                <span class="badge ${lugar.categoria === 'recreativo' ? 'badge-recreativo' : ''}">${lugar.especialidad}</span>
+                                <h3>${lugar.nombre}</h3>
+                                <p><strong>Ubicación:</strong> ${lugar.colonia}</p>
+                            </div>
+                            <button class="btn-search" onclick="window.open('${urlMapas}', '_blank')">Cómo Llegar (Maps)</button>
+                        </article>
+                    `;
+                    contenedorTarjetas.innerHTML += tarjetaHTML;
+                }
             });
         }
 
-        // Cargar todos los marcadores al inicio
-        cargarMarcadores(lugares);
+        // 3. Petición GET a MySQL en Railway
+        function cargarDatosMySQL() {
+            fetch('http://localhost:5000/api/lugares')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error al conectar con la base de datos');
+                    return res.json();
+                })
+                .then(data => {
+                    todosLosLugares = data;
+                    renderizarLugares(todosLosLugares);
+                })
+                .catch(err => console.error('Error al obtener datos de MySQL:', err));
+        }
 
-        // 6. Función de Filtrado Dinámico en el Mapa
+        window.onload = cargarDatosMySQL;
+
+        // 4. Filtrar por Especialidad
         function filtrarMapa() {
             const categoria = document.getElementById('categoria').value;
             if (categoria === 'todos') {
-                cargarMarcadores(lugares);
+                renderizarLugares(todosLosLugares);
             } else {
-                const filtrados = lugares.filter(l => l.categoria === categoria);
-                cargarMarcadores(filtrados);
+                const filtrados = todosLosLugares.filter(l => l.categoria === categoria);
+                renderizarLugares(filtrados);
             }
+        }
+
+        // 5. Control de la Ventana Modal
+        function abrirModal() {
+            document.getElementById('modalAgregar').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalAgregar').style.display = 'none';
+            document.getElementById('formAgregarLugar').reset();
+        }
+
+        // 6. Guardar nuevo lugar en MySQL
+        function guardarLugarBD(event) {
+            event.preventDefault();
+
+            const latInput = parseFloat(document.getElementById('nuevaLatitud').value);
+            const lngInput = parseFloat(document.getElementById('nuevaLongitud').value);
+
+            const nuevoLugar = {
+                nombre: document.getElementById('nuevoNombre').value,
+                categoria: document.getElementById('nuevaCategoria').value,
+                especialidad: document.getElementById('nuevaEspecialidad').value,
+                colonia: document.getElementById('nuevaColonia').value,
+                latitud: latInput,
+                longitud: lngInput,
+                google_maps_url: document.getElementById('nuevaMapsUrl').value || `https://maps.google.com/?q=${latInput},${lngInput}`
+            };
+
+            fetch('http://localhost:5000/api/lugares', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nuevoLugar)
+            })
+            .then(res => res.json())
+            .then(respuesta => {
+                cerrarModal();
+                mapa.flyTo([latInput, lngInput], 15);
+                cargarDatosMySQL();
+            })
+            .catch(err => console.error('Error al guardar en MySQL:', err));
         }
     </script>
 </body>
